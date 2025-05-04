@@ -181,4 +181,54 @@ document.addEventListener('DOMContentLoaded', () => {
             resultsContainer.style.display = 'none';
         }
     });
+
+    // Lógica para abrir y cerrar el modal
+    const modal = document.getElementById('route-modal');
+    const openModalBtn = document.getElementById('plan-route-btn');
+    const closeModalBtn = document.querySelector('.close');
+
+    // Abrir modal al hacer clic en "Planear Ruta"
+    openModalBtn.addEventListener('click', () => {
+        modal.style.display = 'block';
+    });
+
+    // Cerrar modal al hacer clic en la "X"
+    closeModalBtn.addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
+
+    // Cerrar modal al hacer clic fuera del contenido
+    window.addEventListener('click', (event) => {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+
+    // Validación y cálculo de ruta (pendiente de implementación)
+    document.getElementById('route-form').addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        // Obtener valores del formulario
+        const origin = document.getElementById('origin').value.trim();
+        const destination = document.getElementById('destination').value.trim();
+        const preference = document.getElementById('preference').value;
+        const time = document.getElementById('time').value;
+
+        // Validar campos obligatorios
+        if (!origin || !destination) {
+            document.getElementById('error-message').textContent = 'Ambos campos son obligatorios.';
+            document.getElementById('error-message').style.display = 'block';
+            return;
+        }
+
+        // Ocultar mensaje de error si todo está bien
+        document.getElementById('error-message').style.display = 'none';
+
+        // Llamar a la función para calcular la ruta (pendiente de implementación)
+        console.log('Calculando ruta...');
+        console.log('Origen:', origin);
+        console.log('Destino:', destination);
+        console.log('Preferencia:', preference);
+        console.log('Horario:', time);
+    });
 });
