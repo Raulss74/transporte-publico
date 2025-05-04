@@ -14,6 +14,21 @@
         <h1>Planificador de Rutas de Transporte Público</h1>
     </header>
     <main>
+        <!-- Selector de Tipo de Transporte -->
+        <div id="transport-selector">
+            <label for="transport-type">Selecciona un sistema de transporte:</label>
+            <select id="transport-type">
+                <option value="all">Todos</option>
+                <option value="metro">Metro</option>
+                <option value="metrobus">Metrobús</option>
+                <option value="rtp">RTP</option>
+                <option value="cablebus">Cablebús</option>                
+                <option value="trolebus">Trolebús</option>
+                <option value="concesionado">Concesionado</option>
+                <option value="cetram">CETRAM</option>
+            </select>
+        </div>
+
         <!-- Barra de Búsqueda -->
         <div id="search-bar">
             <input type="text" id="search-input" placeholder="Buscar ubicación..." />

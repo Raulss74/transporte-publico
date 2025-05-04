@@ -12,12 +12,26 @@ document.addEventListener('DOMContentLoaded', () => {
         accessToken: mapboxAccessToken, // Acceso Token cargado desde config.php
     }).addTo(map);
 
+    // Definir estilos para cada sistema de transporte
+    const estilos = {
+        metro: { color: "#e583eb", fillColor: "#e583eb", radius: 6, weight: 2 },
+        metrobus: { color: "#df1b39", fillColor: "#df1b39", radius: 6, weight: 2 },
+        rtp: { color: "#413ef1", fillColor: "#413ef1", radius: 4, weight: 1 },
+        cablebus: { color: "#0a54a2", fillColor: "#0a54a2", radius: 6, weight: 2 },
+        trolebus: { color: "#26c97b", fillColor: "#26c97b", radius: 4, weight: 1 },
+        concesionado: { color: "#ed7d2d", fillColor: "#ed7d2d ", radius: 4, weight: 1 },
+        cetram: { color: "#fa09dd", fillColor: "#fa09dd", radius: 6, weight: 2 },
+    };
+
+    // Objeto para almacenar las capas de cada sistema de transporte
+    const layers = {};
+
     // Función para cargar GeoJSON
     const cargarGeoJSON = (archivo, estilo, popupCallback) => {
-        fetch(archivo)
+        return fetch(archivo)
             .then(response => response.json())
             .then(data => {
-                L.geoJSON(data, {
+                const layer = L.geoJSON(data, {
                     style: estilo,
                     pointToLayer: (feature, latlng) => {
                         return L.circleMarker(latlng, estilo);
@@ -27,56 +41,99 @@ document.addEventListener('DOMContentLoaded', () => {
                             layer.bindPopup(popupCallback(feature));
                         }
                     }
-                }).addTo(map);
+                });
+                return layer;
             })
             .catch(error => console.error(`Error al cargar ${archivo}:`, error));
     };
 
-    // Definir estilos para cada sistema de transporte
-    const estilos = {
-        metro: { color: "#ce16e7", fillColor: "#ce16e7", radius: 3, weight: 1 },
-        metrobús: { color: "#df1b39", fillColor: "#df1b39", radius: 3, weight: 1 },
-        rtp: { color: "#413ef1", fillColor: "#413ef1", radius: 2, weight: 1 },
-        cablebus: { color: "#22bee2", fillColor: "#22bee2", radius: 3, weight: 1 },
-        trenligero: { color: "#e9e913", fillColor: "#e9e913", radius: 3, weight: 1 },
-        trolebus: { color: "#26c97b", fillColor: "#26c97b", radius: 3, weight: 1 },
-        concesionado: { color: "#ed7d2d", fillColor: "#ed7d2d ", radius: 2, weight: 1 },
-        cetram: { color: "#fa09dd", fillColor: "#fa09dd", radius: 4, weight: 1 },
+    // Cargar todos los archivos GeoJSON y almacenar las capas
+    const cargarDatos = async () => {
+        // Metro
+        layers['metro_estaciones'] = await cargarGeoJSON('data/metro_estaciones.geojson', estilos.metro, feature => 
+            `<b>${feature.properties.NOMBRE}</b><br>Línea: ${feature.properties.LINEA}`
+        );
+        layers['metro_lineas'] = await cargarGeoJSON('data/metro_lineas.geojson', estilos.metro);
+
+        // Metrobús
+        layers['metrobus_estaciones'] = await cargarGeoJSON('data/metrobus_estaciones.geojson', estilos.metrobus, feature => 
+            `<b>${feature.properties.NOMBRE}</b><br>Tipo: ${feature.properties.TIPO}`
+        );
+        layers['metrobus_lineas'] = await cargarGeoJSON('data/metrobus_lineas.geojson', estilos.metrobus);
+
+        // RTP
+        layers['rtp_paradas'] = await cargarGeoJSON('data/rtp_paradas.geojson', estilos.rtp, feature => 
+            `<b>${feature.properties.NOMBRE}</b><br>Ruta: ${feature.properties.RUTA}`
+        );
+        layers['rtp_lineas'] = await cargarGeoJSON('data/rtp_lineas.geojson', estilos.rtp);
+
+        // Cablebús
+        layers['cablebus_estaciones'] = await cargarGeoJSON('data/cablebus_estaciones.geojson', estilos.cablebus, feature => 
+            `<b>${feature.properties.NOMBRE}</b><br>Ruta: ${feature.properties.RUTA}`
+        );
+        layers['cablebus_lineas'] = await cargarGeoJSON('data/cablebus_lineas.geojson', estilos.cablebus);
+
+        // Trolebús
+        layers['trolebus_paradas'] = await cargarGeoJSON('data/trolebus_paradas.geojson', estilos.trolebus, feature => 
+            `<b>${feature.properties.NOMBRE}</b><br>Ruta: ${feature.properties.RUTA}`
+        );
+        layers['trolebus_lineas'] = await cargarGeoJSON('data/trolebus_lineas.geojson', estilos.trolebus);
+
+        // Concesionado
+        layers['concesionado_paradas'] = await cargarGeoJSON('data/concesionado_paradas.geojson', estilos.concesionado, feature => 
+            `<b>${feature.properties.NOMBRE}</b><br>Ruta: ${feature.properties.RUTA}`
+        );
+        layers['concesionado_rutas'] = await cargarGeoJSON('data/concesionado_rutas.geojson', estilos.concesionado);
+
+        // CETRAM
+        layers['cetram'] = await cargarGeoJSON('data/cetram.geojson', estilos.cetram, feature => 
+            `<b>${feature.properties.NOMBRE}</b><br>Ruta: ${feature.properties.RUTA}`
+        );
     };
 
-    // Cargar archivos GeoJSON para cada sistema de transporte
-    cargarGeoJSON('data/metro_estaciones.geojson', estilos.metro, feature => 
-        `<b>${feature.properties.NOMBRE}</b><br>Línea: ${feature.properties.LINEA}`
-    );
-    cargarGeoJSON('data/metro_lineas.geojson', estilos.metro);
+    // Mostrar u ocultar capas según el tipo de transporte seleccionado
+    const actualizarCapas = (tipo) => {
+        Object.keys(layers).forEach(key => {
+            if (layers[key]) {
+                map.removeLayer(layers[key]); // Ocultar todas las capas
+            }
+        });
 
-    cargarGeoJSON('data/metrobus_estaciones.geojson', estilos.metrobús, feature => 
-        `<b>${feature.properties.NOMBRE}</b><br>Tipo: ${feature.properties.TIPO}`
-    );
-    cargarGeoJSON('data/metrobus_lineas.geojson', estilos.metrobús);
+        if (tipo === 'all') {
+            // Mostrar todas las capas
+            Object.values(layers).forEach(layer => {
+                if (layer) map.addLayer(layer);
+            });
+        } else {
+            // Filtrar capas por tipo de transporte usando un mapa de tipos
+            const tipoMap = {
+                metro: ['metro_estaciones', 'metro_lineas'],
+                metrobus: ['metrobus_estaciones', 'metrobus_lineas'],
+                rtp: ['rtp_paradas', 'rtp_lineas'],
+                cablebus: ['cablebus_estaciones', 'cablebus_lineas'],
+                trolebus: ['trolebus_paradas', 'trolebus_lineas'],
+                concesionado: ['concesionado_paradas', 'concesionado_rutas'],
+                cetram: ['cetram']
+            };
 
-    cargarGeoJSON('data/rtp_paradas.geojson', estilos.rtp, feature => 
-        `<b>${feature.properties.NOMBRE}</b><br>Ruta: ${feature.properties.RUTA}`
-    );
-    cargarGeoJSON('data/rtp_lineas.geojson', estilos.rtp);
+            if (tipoMap[tipo]) {
+                tipoMap[tipo].forEach(layerKey => {
+                    if (layers[layerKey]) {
+                        map.addLayer(layers[layerKey]);
+                    }
+                });
+            }
+        }
+    };
 
-    cargarGeoJSON('data/cablebus_estaciones.geojson', estilos.cablebus, feature => 
-        `<b>${feature.properties.NOMBRE}</b><br>Ruta: ${feature.properties.RUTA}`
-    );
-    cargarGeoJSON('data/concesionado_paradas.geojson', estilos.concesionado, feature => 
-        `<b>${feature.properties.NOMBRE}</b><br>Ruta: ${feature.properties.RUTA}`
-    );
+    // Evento para el selector de tipo de transporte
+    document.getElementById('transport-type').addEventListener('change', (event) => {
+        const tipo = event.target.value;
+        actualizarCapas(tipo);
+    });
 
-    cargarGeoJSON('data/trenligero_estaciones.geojson', estilos.trenligero, feature => 
-        `<b>${feature.properties.NOMBRE}</b><br>Ruta: ${feature.properties.RUTA}`
-    );
-    cargarGeoJSON('data/trolebus_estaciones.geojson', estilos.trolebus, feature => 
-        `<b>${feature.properties.NOMBRE}</b><br>Ruta: ${feature.properties.RUTA}`
-    );
-
-    cargarGeoJSON('data/cetram.geojson', estilos.cetram, feature => 
-        `<b>${feature.properties.NOMBRE}</b><br>Ruta: ${feature.properties.RUTA}`
-    );
+    // Cargar datos y mostrar todas las capas inicialmente
+    cargarDatos().then(() => actualizarCapas('all'));
 
     // Implementar el buscador
     const searchInput = document.getElementById('search-input');
@@ -95,11 +152,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     return response.json();
                 })
                 .then(data => {
-                    // Limpiar resultados anteriores
                     resultsContainer.innerHTML = '';
                     resultsContainer.style.display = 'block';
 
-                    // Mostrar sugerencias
                     if (data.features.length === 0) {
                         resultsContainer.innerHTML = '<div class="suggestion">No se encontraron resultados</div>';
                     } else {
@@ -114,7 +169,6 @@ document.addEventListener('DOMContentLoaded', () => {
                                 const coordinates = feature.geometry.coordinates;
                                 map.setView([coordinates[1], coordinates[0]], 15);
 
-                                // Limpiar y ocultar el contenedor de resultados
                                 resultsContainer.innerHTML = '';
                                 resultsContainer.style.display = 'none';
                             });
@@ -124,7 +178,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 })
                 .catch(error => console.error('Error fetching data:', error));
         } else {
-            // Ocultar el contenedor de resultados si la consulta es demasiado corta
             resultsContainer.style.display = 'none';
         }
     });
