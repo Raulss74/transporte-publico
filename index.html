@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planificador de Rutas</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="includes/config.php"></script> <!-- Carga el Access Token -->
+</head>
+<body>
+    <header>
+        <h1>Planificador de Rutas de Transporte Público</h1>
+    </header>
+    <main>
+        <!-- Barra de Búsqueda -->
+        <div id="search-bar">
+            <input type="text" id="search-input" placeholder="Buscar ubicación..." />
+            <div id="results"></div>
+        </div>
+
+        <!-- Mapa -->
+        <div id="map" style="width: 100%; height: 700px;"></div>
+    </main>
+    <footer>
+        <p>&copy; 2025 - Raúl Sánchez Salgado - CDMX</p>
+    </footer>
+    <script src="js/mapa.js"></script> <!-- Archivo JavaScript para el mapa -->
+</body>
+</html>

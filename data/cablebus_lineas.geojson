@@ -1,0 +1,11 @@
+{
+"type": "FeatureCollection",
+"name": "cablebus_lineas",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "SISTEMA": "STE Cablebús", "LINEA": "1", "RUTA": "Indios Verdes - Cuautepec" }, "geometry": { "type": "MultiLineString", "coordinates": [ [ [ -99.122259, 19.495444, 0.0 ], [ -99.133804713665143, 19.511671356428256, 0.0 ], [ -99.140797441110749, 19.527354446465068, 0.0 ], [ -99.141959, 19.540266, 0.0 ], [ -99.134157476334536, 19.557946283599012, 0.0 ] ] ] } },
+{ "type": "Feature", "properties": { "SISTEMA": "STE Cablebús", "LINEA": "1", "RUTA": "Antena Tlalpexco" }, "geometry": { "type": "MultiLineString", "coordinates": [ [ [ -99.126427, 19.544771, 0.0 ], [ -99.141959, 19.540266, 0.0 ] ] ] } },
+{ "type": "Feature", "properties": { "SISTEMA": "STE Cablebús", "LINEA": "2", "RUTA": "Constitución de 1917 - Santa Marta" }, "geometry": { "type": "MultiLineString", "coordinates": [ [ [ -99.062505242538677, 19.344856834885025, 0.0 ], [ -99.043449257437402, 19.327826964295728, 0.0 ], [ -99.03082648821551, 19.331787898925281, 0.0 ], [ -99.019002876530919, 19.336172632819135, 0.0 ], [ -99.008111678301546, 19.340827679599396, 0.0 ], [ -98.989548794888904, 19.34352581352654, 0.0 ], [ -98.993982201317266, 19.35951698289221, 0.0 ] ] ] } },
+{ "type": "Feature", "properties": { "SISTEMA": "STE Cablebús", "LINEA": "3", "RUTA": "Los Pinos/Constituyentes - Vasco de Quiroga" }, "geometry": { "type": "MultiLineString", "coordinates": [ [ [ -99.231799031541314, 19.384222351732006, 0.0 ], [ -99.229050727819001, 19.391218352589, 0.0 ], [ -99.222161394294986, 19.396781373397001, 0.0 ], [ -99.213007215014983, 19.399696832322999, 0.0 ], [ -99.200962962342004, 19.407310940337993, 0.0 ], [ -99.191455505068006, 19.413043897202002, 0.0 ] ] ] } }
+]
+}
