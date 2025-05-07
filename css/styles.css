@@ -161,7 +161,7 @@ footer {
     color: red;
 }
 
-/* Estilos para el formulario dentro del modal */
+/* Estilos para el formulario dentro del modal de planificación */
 #route-form {
     display: flex;
     flex-direction: column;
@@ -228,4 +228,118 @@ footer {
 
 .autocomplete-results div:hover {
     background-color: #f0f0f0;
+}
+
+/* Estilos para el panel lateral de resultados */
+#result-panel {
+    position: fixed;
+    top: 20px;
+    right: 0;
+    width: 350px;
+    height: calc(100% - 100px); /* Ajusta la altura para no superponerse con el footer */
+    background-color: white;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    transition: transform 0.3s ease; /* Animación suave para deslizarse */
+    padding: 20px;
+    box-sizing: border-box;
+    border-radius: 8px 0 0 8px; /* Bordes redondeados en el lado izquierdo */
+}
+
+#result-panel.closed {
+    transform: translateX(100%); /* Oculta el panel fuera de la pantalla */
+}
+
+#result-content {
+    overflow-y: auto;
+    height: calc(100% - 60px); /* Espacio para el botón de pestaña */
+}
+
+#toggle-result-panel {
+    position: absolute;
+    top: 20px;
+    left: -40px;
+    width: 40px;
+    height: 40px;
+    background-color: #6C1E29;
+    color: white;
+    border: none;
+    border-radius: 8px 0 0 8px;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+}
+
+#toggle-result-panel:hover {
+    background-color: #0056b3;
+}
+
+/* Estilos para la leyenda de rutas */
+.route-legend {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+}
+
+.route-legend li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.color-marker {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    border: 1px solid #333;
+}
+
+/* Estilos para los botones dentro del panel de resultados */
+#result-content button {
+    padding: 10px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 5px;
+    transition: background-color 0.3s ease;
+}
+
+#result-content button:hover {
+    background-color: #0056b3;
+}
+
+/* Estilos para los detalles del viaje en el panel de resultados */
+#result-content h3{
+    margin: 0 auto;
+    font-size: 18px;
+    font-style: normal;
+}
+
+#result-content h4 {
+    margin: 10px 0;
+    font-size: 16px;
+    font-style: normal;
+}
+
+#result-content p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+#result-content ul {
+    padding-left: 20px;
+    margin: 10px 0;
+}
+
+#result-content li {
+    margin-bottom: 10px;
+    font-size: 14px;
 }

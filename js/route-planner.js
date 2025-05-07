@@ -10,15 +10,19 @@ if (typeof mapboxAccessToken === 'undefined') {
 let rutaActual = [];
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Referencias al modal y sus elementos
+  // Referencias al modal de planificación y sus elementos
   const modal = document.getElementById('route-modal');
   const openModalBtn = document.getElementById('plan-route-btn');
-  const closeModalBtn = document.querySelector('.modal-content .close');
+  const closeModalBtn = document.querySelector('#route-modal .modal-content .close');
   const routeForm = document.getElementById('route-form');
 
-  // Verificar que los elementos existan
+  // Referencias al panel de resultados
+  const resultPanel = document.getElementById('result-panel');
+  const togglePanelBtn = document.getElementById('toggle-result-panel');
+
+  // Verificar que los elementos del modal de planificación existan
   if (!modal || !openModalBtn || !closeModalBtn || !routeForm) {
-    console.error('Elementos del modal no encontrados:', {
+    console.error('Elementos del modal de planificación no encontrados:', {
       modal: !!modal,
       openModalBtn: !!openModalBtn,
       closeModalBtn: !!closeModalBtn,
@@ -27,21 +31,37 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  // Abrir modal al hacer clic en "Planear Ruta"
+  // Verificar que los elementos del panel de resultados existan
+  if (!resultPanel || !togglePanelBtn) {
+    console.error('Elementos del panel de resultados no encontrados:', {
+      resultPanel: !!resultPanel,
+      togglePanelBtn: !!togglePanelBtn,
+    });
+    return;
+  }
+
+  // Abrir modal de planificación al hacer clic en "Planear Ruta"
   openModalBtn.addEventListener('click', () => {
     modal.style.display = 'block';
   });
 
-  // Cerrar modal al hacer clic en la "X"
+  // Cerrar modal de planificación al hacer clic en la "X"
   closeModalBtn.addEventListener('click', () => {
     modal.style.display = 'none';
   });
 
-  // Cerrar modal al hacer clic fuera del contenido
+  // Cerrar modal de planificación al hacer clic fuera del contenido
   window.addEventListener('click', (event) => {
     if (event.target === modal) {
       modal.style.display = 'none';
     }
+  });
+
+  // Alternar el panel de resultados (abrir/cerrar)
+  togglePanelBtn.addEventListener('click', () => {
+    const isClosed = resultPanel.classList.contains('closed');
+    resultPanel.classList.toggle('closed');
+    togglePanelBtn.textContent = isClosed ? '≫' : '≪';
   });
 
   // Inicializar autocompletado para Origen y Destino
@@ -85,8 +105,12 @@ document.addEventListener('DOMContentLoaded', () => {
       // Calcular la ruta usando Mapbox Directions API
       calculateRouteWithAlternatives(originCoords, destinationCoords, preference, time);
 
-      // Ocultar el modal
+      // Ocultar el modal de planificación
       modal.style.display = 'none';
+
+      // Mostrar el panel de resultados
+      resultPanel.classList.remove('closed');
+      togglePanelBtn.textContent = '≪';
     } catch (error) {
       console.error('Error al validar ubicaciones:', error);
       errorMessage.textContent = 'Ocurrió un error al procesar las ubicaciones.';
@@ -216,26 +240,28 @@ function calculateRouteWithAlternatives(originCoords, destinationCoords, prefere
         rutaActual.forEach((layer) => map.removeLayer(layer));
       }
 
-      // Dibujar rutas en el mapa
+      // Dibujar rutas en el mapa y almacenar colores
       rutaActual = [];
-      data.routes.forEach((route, index) => {
-        const coordinates = route.geometry.coordinates;
-        const colors = ['#007bff', '#ff5733', '#33ff57'];
-        const color = colors[index % colors.length];
+      const routeColors = ['#007bff', '#ff5733', '#33ff57'];
+      const routesWithColors = data.routes.map((route, index) => ({
+        route,
+        color: routeColors[index % routeColors.length],
+      }));
 
+      routesWithColors.forEach(({ route, color }, index) => {
+        const coordinates = route.geometry.coordinates;
         const routeLayer = L.geoJSON(
           { type: 'LineString', coordinates },
           { color, weight: 4, opacity: 0.8 }
         ).addTo(map);
-
         rutaActual.push(routeLayer);
       });
 
       // Ajustar la vista del mapa
       map.fitBounds(rutaActual[0].getBounds());
 
-      // Mostrar detalles del viaje
-      mostrarDetallesDelViaje(data.routes[0]);
+      // Mostrar detalles del viaje en el panel de resultados
+      mostrarDetallesDelViaje(routesWithColors);
     })
     .catch((error) => {
       console.error('Error al calcular la ruta:', error);
@@ -257,15 +283,41 @@ function getProfileFromPreference(preference) {
   }
 }
 
-// Función para mostrar detalles del viaje
-function mostrarDetallesDelViaje(route) {
+// Función para mostrar detalles del viaje en el panel de resultados
+function mostrarDetallesDelViaje(routesWithColors) {
   const map = window.mapGlobals.map;
   const transportCosts = window.mapGlobals.transportCosts;
+  const resultContent = document.getElementById('result-content');
 
+  if (!resultContent) {
+    console.error('Contenedor del panel de resultados no encontrado (#result-content)');
+    return;
+  }
+
+  // Generar la leyenda de colores para las rutas
+  const leyendaHTML = `
+    <h3>Panel de Información</h3>
+    <h4>Rutas</h4>
+    <ul class="route-legend">
+      ${routesWithColors
+        .map(
+          ({ color }, index) => `
+            <li>
+              <span class="color-marker" style="background-color: ${color};"></span>
+              ${index === 0 ? 'Ruta Óptima' : `Ruta Alternativa ${index}`}
+            </li>
+          `
+        )
+        .join('')}
+    </ul>
+  `;
+
+  // Procesar la ruta óptima (primera ruta)
+  const route = routesWithColors[0].route;
   const distancia = (route.distance / 1000).toFixed(2); // Convertir a km
   const tiempoTotal = Math.ceil(route.duration / 60); // Convertir a minutos
 
-  // Calcular el costo total basado en los segmentos (simulado, ya que Mapbox no devuelve modos de transporte público)
+  // Calcular el costo total basado en los segmentos (simulado)
   let costoTotal = 0;
   const segmentos = route.legs.flatMap((leg) =>
     leg.steps.map((step) => ({
@@ -275,15 +327,14 @@ function mostrarDetallesDelViaje(route) {
     }))
   );
 
-  // Nota: Como Mapbox no soporta transporte público, simulamos un costo genérico
   segmentos.forEach((segmento) => {
     const costoPorViaje = transportCosts[segmento.modo] || 0;
     costoTotal += costoPorViaje;
   });
 
-  // Generar HTML para el panel de información
+  // Generar HTML para los detalles del viaje
   const detallesHTML = `
-    <h3>Resumen del Viaje</h3>
+    <h4>Resumen del Viaje</h4>
     <p><strong>Tiempo Total:</strong> ${tiempoTotal} minutos</p>
     <p><strong>Distancia Total:</strong> ${distancia} km</p>
     <p><strong>Costo Aproximado:</strong> $${costoTotal.toFixed(2)}</p>
@@ -291,7 +342,9 @@ function mostrarDetallesDelViaje(route) {
     <ul>
       ${segmentos
         .map(
-          (segmento) => `
+          (
+            segmento
+          ) => `
             <li>
               <strong>Modo:</strong> ${segmento.modo}<br>
               <strong>Distancia:</strong> ${segmento.distancia} km<br>
@@ -303,19 +356,12 @@ function mostrarDetallesDelViaje(route) {
         .join('')}
     </ul>
     <button id="save-route-btn">Guardar Ruta</button>
+    <button id="save-frequent-btn">Guardar en Rutas Frecuentes</button>
     <button id="share-route-btn">Compartir Ruta</button>
   `;
 
-  // Insertar el panel de información después del mapa
-  const tripDetails = document.createElement('div');
-  tripDetails.id = 'trip-details';
-  tripDetails.innerHTML = detallesHTML;
-  const mapElement = document.getElementById('map');
-  if (mapElement.nextSibling) {
-    mapElement.parentNode.insertBefore(tripDetails, mapElement.nextSibling);
-  } else {
-    mapElement.parentNode.appendChild(tripDetails);
-  }
+  // Insertar contenido en el panel de resultados
+  resultContent.innerHTML = leyendaHTML + detallesHTML;
 
   // Botón para guardar la ruta
   document.getElementById('save-route-btn').addEventListener('click', () => {
@@ -327,6 +373,15 @@ function mostrarDetallesDelViaje(route) {
     a.download = 'ruta.json';
     a.click();
     URL.revokeObjectURL(url);
+  });
+
+  // Botón para guardar en rutas frecuentes (simulado)
+  document.getElementById('save-frequent-btn').addEventListener('click', () => {
+    const rutaJSON = JSON.stringify(route);
+    let frequentRoutes = JSON.parse(localStorage.getItem('frequentRoutes') || '[]');
+    frequentRoutes.push(rutaJSON);
+    localStorage.setItem('frequentRoutes', JSON.stringify(frequentRoutes));
+    alert('Ruta guardada en Rutas Frecuentes');
   });
 
   // Botón para compartir la ruta
