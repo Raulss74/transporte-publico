@@ -317,6 +317,17 @@ footer {
 }
 
 /* Estilos para los detalles del viaje en el panel de resultados */
+
+#result-content {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background: white;
+    color: black;
+    min-height: 200px;
+    padding: 10px;
+  }
+
 #result-content h3{
     margin: 0 auto;
     font-size: 18px;
