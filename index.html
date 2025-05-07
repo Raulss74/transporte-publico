@@ -1,97 +1,130 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Planificador de Rutas</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="css/styles.css" />
+    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <script src="includes/config.php"></script> <!-- Carga el Access Token -->
-</head>
-<body>
+    <!-- Cargar Access Token desde config.php -->
+    <script src="includes/config.php"></script>
+  </head>
+  <body>
     <header>
-        <h1>Planificador de Rutas de Transporte Público</h1>
+      <h1>Planificador de Rutas de Transporte Público</h1>
     </header>
     <main>
-        <!-- Barra de Búsqueda y Controles -->
-        <div id="controls-container">
-            <!-- Barra de Búsqueda General -->
-            <div id="search-bar">
-                <input type="text" id="search-input" placeholder="Buscar ubicación..." />
-                <div id="results"></div>
-            </div>
-
-            <!-- Botón Planear Ruta -->
-            <button id="plan-route-btn">Planear Ruta</button>
-
-            <!-- Selector de Tipo de Transporte -->
-            <div id="transport-selector">
-                <label for="transport-type">Sistema de transporte:</label>
-                <select id="transport-type">
-                    <option value="all">Todos</option>
-                    <option value="metro">Metro</option>
-                    <option value="metrobus">Metrobús</option>
-                    <option value="rtp">RTP</option>
-                    <option value="cablebus">Cablebús</option>                
-                    <option value="trolebus">Trolebús</option>
-                    <option value="concesionado">Concesionado</option>
-                    <option value="cetram">CETRAM</option>
-                </select>
-            </div>
-
-            <!-- Botones de Sistemas de Transporte -->
-            <div id="transport-buttons">
-                <div class="button-row">
-                    <button onclick="window.location.href='metro.html'">Metro</button>
-                    <button onclick="window.location.href='metrobus.html'">Metrobús</button>
-                    <button onclick="window.location.href='rtp.html'">RTP</button>
-                </div>
-                <div class="button-row">
-                    <button onclick="window.location.href='cablebus.html'">Cablebús</button>
-                    <button onclick="window.location.href='trolebus.html'">Trolebús</button>
-                    <button onclick="window.location.href='cetram.html'">CETRAM</button>
-                </div>
-            </div>
-
-        <!-- Mapa -->
-        <div id="map" style="width: 100%; height: 700px;"></div>
-
-        <!-- Modal para Planificar Ruta -->
-        <div id="route-modal" class="modal">
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <h2>Planificar Ruta</h2>
-                <form id="route-form">
-                    <div>
-                        <label for="origin">Origen:</label>
-                        <input type="text" id="origin" placeholder="Escribe tu punto de origen..." required />
-                    </div>
-                    <div>
-                        <label for="destination">Destino:</label>
-                        <input type="text" id="destination" placeholder="Escribe tu punto de destino..." required />
-                    </div>
-                    <div>
-                        <label for="preference">Preferencia de Transporte:</label>
-                        <select id="preference">
-                            <option value="fastest">Más rápido</option>
-                            <option value="least-transfers">Menos transbordos</option>
-                            <option value="accessible">Accesible</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="time">Horario de Viaje:</label>
-                        <input type="time" id="time" />
-                    </div>
-                    <button type="submit">Calcular Ruta</button>
-                </form>
-                <div id="error-message" style="color: red; display: none;">Por favor, completa todos los campos.</div>
-            </div>
+      <!-- Barra de Búsqueda y Controles -->
+      <div id="controls-container">
+        <!-- Barra de Búsqueda General -->
+        <div id="search-bar">
+          <input
+            type="text"
+            id="search-input"
+            placeholder="Buscar ubicación..."
+          />
+          <div id="results"></div>
         </div>
+
+        <!-- Botón Planear Ruta -->
+        <button id="plan-route-btn">PLANEAR RUTA</button>
+
+        <!-- Selector de Tipo de Transporte -->
+        <div id="transport-selector">
+          <label for="transport-type">Sistema de transporte:</label>
+          <select id="transport-type">
+            <option value="all">Todos</option>
+            <option value="metro">Metro</option>
+            <option value="metrobus">Metrobús</option>
+            <option value="rtp">RTP</option>
+            <option value="cablebus">Cablebús</option>
+            <option value="trolebus">Trolebús</option>
+            <option value="concesionado">Concesionado</option>
+            <option value="cetram">CETRAM</option>
+            <option value="none">Ninguno</option>
+          </select>
+        </div>
+
+        <!-- Botones de Sistemas de Transporte -->
+        <div id="transport-buttons">
+          <div class="button-row">
+            <button onclick="window.location.href='metro.html'">Metro</button>
+            <button onclick="window.location.href='metrobus.html'">
+              Metrobús
+            </button>
+            <button onclick="window.location.href='rtp.html'">RTP</button>
+          </div>
+          <div class="button-row">
+            <button onclick="window.location.href='cablebus.html'">
+              Cablebús
+            </button>
+            <button onclick="window.location.href='trolebus.html'">
+              Trolebús
+            </button>
+            <button onclick="window.location.href='cetram.html'">CETRAM</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mapa -->
+      <div id="map" style="width: 100%; height: 700px"></div>
+
+      <!-- Modal para Planificar Ruta -->
+      <div id="route-modal" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2>Planificar Ruta</h2>
+          <form id="route-form">
+            <div>
+              <label for="origin">Origen:</label>
+              <input
+                type="text"
+                id="origin"
+                placeholder="Escribe tu punto de origen..."
+                required
+              />
+              <div id="origin-results" class="autocomplete-results"></div>
+            </div>
+            <div>
+              <label for="destination">Destino:</label>
+              <input
+                type="text"
+                id="destination"
+                placeholder="Escribe tu punto de destino..."
+                required
+              />
+              <div id="destination-results" class="autocomplete-results"></div>
+            </div>
+            <div>
+              <label for="preference">Preferencia de Transporte:</label>
+              <select id="preference">
+                <option value="fastest">Más rápido</option>
+                <option value="least-transfers">Menos transbordos</option>
+                <option value="accessible">Accesible</option>
+              </select>
+            </div>
+            <div>
+              <label for="time">Horario de Viaje:</label>
+              <input type="time" id="time" />
+            </div>
+            <button type="submit">Calcular Ruta</button>
+          </form>
+          <div id="error-message" style="color: red; display: none">
+            Por favor, completa todos los campos.
+          </div>
+        </div>
+      </div>
+      
     </main>
     <footer>
-        <p>&copy; 2025 - Raúl Sánchez Salgado - CDMX</p>
+      <p>&copy; 2025 - Raúl Sánchez Salgado - CDMX</p>
     </footer>
-    <script src="js/mapa.js"></script> <!-- Archivo JavaScript para el mapa -->
-</body>
+    <!-- Scripts -->
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <!-- Archivos JavaScript separados -->
+    <script src="js/map.js"></script>
+    <script src="js/route-planner.js"></script>
+  </body>
 </html>

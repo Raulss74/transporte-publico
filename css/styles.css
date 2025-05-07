@@ -37,7 +37,6 @@ footer {
     position: relative;
     width: 300px;
     margin: 20px;
-    
 }
 
 #search-input {
@@ -116,7 +115,7 @@ footer {
 #transport-buttons button {
     padding: 8px; /* Reducimos el padding para hacerlos más pequeños */
     font-size: 14px; /* Reducimos el tamaño del texto */
-    background-color: #28a745;
+    background-color: #D10F3F;
     color: white;
     border: none;
     cursor: pointer;
@@ -126,19 +125,19 @@ footer {
 }
 
 #transport-buttons button:hover {
-    background-color: #218838;
+    background-color: #007bff;
 }
 
 /* Modal */
 .modal {
     display: none;
     position: fixed;
-    z-index: 1;
+    z-index: 1001; /* Asegura que esté por encima de otros elementos */
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro semi-transparente */
 }
 
 .modal-content {
@@ -148,6 +147,8 @@ footer {
     border-radius: 8px;
     width: 50%;
     max-width: 600px;
+    position: relative; /* Asegura que el contenido esté centrado */
+    z-index: 1002; /* Asegura que el contenido del modal esté por encima del fondo */
 }
 
 .close {
@@ -158,4 +159,73 @@ footer {
 
 .close:hover {
     color: red;
+}
+
+/* Estilos para el formulario dentro del modal */
+#route-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Espacio entre los campos */
+}
+
+#route-form div {
+    display: flex;
+    flex-direction: column;
+}
+
+#route-form label {
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+#route-form input,
+#route-form select {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#route-form button[type="submit"] {
+    padding: 10px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#route-form button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+#error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+/* Estilos para el autocompletado */
+.autocomplete-results {
+    border: 1px solid #ccc;
+    max-height: 150px;
+    overflow-y: auto;
+    background: white;
+    position: absolute;
+    width: 100%;
+    z-index: 1000;
+    display: none; /* Oculto por defecto */
+}
+
+.autocomplete-results div {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.autocomplete-results div:hover {
+    background-color: #f0f0f0;
 }
